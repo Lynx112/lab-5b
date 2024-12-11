@@ -1,23 +1,25 @@
+
+
 <?php
-session_start();
-if (!isset($_SESSION['matric'])) {
-    header("Location: login.php");
-    exit();
-}
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $matric = $_POST['matric'];
     $name = $_POST['name'];
-    $accessLevel = $_POST['accessLevel'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $role = $_POST['role'];
 
     $conn = new mysqli('localhost', 'root', '', 'Lab_5b');
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "INSERT INTO users (matric, name, accessLevel) VALUES ('$matric', '$name', '$accessLevel')";
+    $sql = "INSERT INTO users (matric, name, password, role) VALUES ('$matric', '$name', '$password', '$role')";
     if ($conn->query($sql) === TRUE) {
-        echo "User registered successfully!";
+        header("Location: login.php");
+        exit();
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
@@ -26,25 +28,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register User</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="register-container">
-    <h2>Registration Form</h2>
-    <form method="POST" action="">
-        Matric: <input type="text" name="matric" required><br>
-        Name: <input type="text" name="name" required><br>
-        Access Level: <input type="text" name="accessLevel" required><br>
-        <button type="submit">Register</button>
-    </form>
-</div>
-</body>
-</html>
 
 
